@@ -6,7 +6,8 @@ import pickle
 from contextlib import nullcontext
 import torch
 import tiktoken
-from model import GPTConfig, GPT
+from model import GPT
+from posttrain.io import load_checkpoint_model
 
 # -----------------------------------------------------------------------------
 init_from = 'resume' # either 'resume' (from an out_dir) or a gpt2 variant (e.g. 'gpt2-xl')
@@ -34,16 +35,7 @@ ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=
 # model
 if init_from == 'resume':
     # init from a model saved in a specific directory
-    ckpt_path = os.path.join(out_dir, 'ckpt.pt')
-    checkpoint = torch.load(ckpt_path, map_location=device)
-    gptconf = GPTConfig(**checkpoint['model_args'])
-    model = GPT(gptconf)
-    state_dict = checkpoint['model']
-    unwanted_prefix = '_orig_mod.'
-    for k,v in list(state_dict.items()):
-        if k.startswith(unwanted_prefix):
-            state_dict[k[len(unwanted_prefix):]] = state_dict.pop(k)
-    model.load_state_dict(state_dict)
+    model, checkpoint = load_checkpoint_model(out_dir, device, False)
 elif init_from.startswith('gpt2'):
     # init from a given GPT-2 model
     model = GPT.from_pretrained(init_from, dict(dropout=0.0))
@@ -62,10 +54,15 @@ if load_meta:
     print(f"Loading meta from {meta_path}...")
     with open(meta_path, 'rb') as f:
         meta = pickle.load(f)
-    # TODO want to make this more general to arbitrary encoder/decoder schemes
-    stoi, itos = meta['stoi'], meta['itos']
-    encode = lambda s: [stoi[c] for c in s]
-    decode = lambda l: ''.join([itos[i] for i in l])
+    if 'stoi' in meta and 'itos' in meta:
+        encode = lambda s: [meta['stoi'][c] for c in s]
+        decode = lambda l: ''.join([meta['itos'][i] for i in l])
+    elif meta.get('tokenizer') == 'gpt2':
+        enc = tiktoken.get_encoding("gpt2")
+        encode = lambda s: enc.encode(s, allowed_special={"<|endoftext|>"})
+        decode = lambda l: enc.decode(l)
+    else:
+        raise ValueError(f"Unsupported meta.pkl tokenizer metadata in {meta_path}: {meta}")
 else:
     # ok let's assume gpt-2 encodings by default
     print("No meta.pkl found, assuming GPT-2 encodings...")

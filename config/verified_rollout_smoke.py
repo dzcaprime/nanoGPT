@@ -1,0 +1,10 @@
+out_dir = "out-dpo-smoke"
+eval_path = "data/posttrain_eval/sample_eval.jsonl"
+verified_out_dir = "data/posttrain_verified"
+samples_per_prompt = 2
+max_new_tokens = 16
+temperature = 0.8
+top_k = 50
+device = "cpu"
+dtype = "float32"
+compile = False

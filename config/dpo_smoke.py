@@ -1,0 +1,13 @@
+out_dir = "out-dpo-smoke"
+source_out_dir = "out-sft-smoke"
+dataset = "posttrain_dpo"
+eval_interval = 1
+eval_iters = 1
+log_interval = 1
+batch_size = 1
+block_size = 128
+max_iters = 2
+learning_rate = 1e-5
+device = "cpu"
+dtype = "float32"
+compile = False

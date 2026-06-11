@@ -1,0 +1,10 @@
+out_dir = "out-sft-smoke"
+eval_path = "data/posttrain_eval/sample_eval.jsonl"
+eval_out_dir = "eval_runs"
+run_name = "sft_smoke_eval"
+max_new_tokens = 16
+temperature = 0.8
+top_k = 50
+device = "cpu"
+dtype = "float32"
+compile = False

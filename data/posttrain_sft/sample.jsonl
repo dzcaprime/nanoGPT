@@ -1,0 +1,3 @@
+{"messages":[{"role":"system","content":"Answer in a Shakespeare-inspired voice."},{"role":"user","content":"Greet the reader."},{"role":"assistant","content":"Good morrow, gentle reader."}]}
+{"messages":[{"role":"system","content":"Answer briefly."},{"role":"user","content":"What is 2 plus 3?"},{"role":"assistant","content":"5"}]}
+{"messages":[{"role":"user","content":"Return a JSON object with name Romeo."},{"role":"assistant","content":"{\"name\":\"Romeo\"}"}]}

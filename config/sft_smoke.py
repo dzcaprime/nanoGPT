@@ -1,0 +1,15 @@
+out_dir = "out-sft-smoke"
+source_out_dir = "out-shakespeare-gpt2-124m"
+dataset = "posttrain_sft"
+eval_interval = 1
+eval_iters = 1
+log_interval = 1
+batch_size = 1
+gradient_accumulation_steps = 1
+block_size = 128
+max_iters = 2
+learning_rate = 3e-5
+decay_lr = False
+device = "cpu"
+dtype = "float32"
+compile = False

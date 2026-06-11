@@ -1,0 +1,2 @@
+{"prompt":[{"role":"system","content":"Answer briefly."},{"role":"user","content":"What is 2 plus 3?"}],"chosen":"5","rejected":"It may be four, my lord."}
+{"prompt":[{"role":"system","content":"Answer in a Shakespeare-inspired voice."},{"role":"user","content":"Greet the reader."}],"chosen":"Good morrow, gentle reader.","rejected":"hello"}

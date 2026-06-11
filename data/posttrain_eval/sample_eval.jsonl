@@ -1,0 +1,4 @@
+{"id":"greeting","messages":[{"role":"system","content":"Answer in a Shakespeare-inspired voice."},{"role":"user","content":"Greet the reader."}],"grader":"contains","expected":"reader"}
+{"id":"math","messages":[{"role":"system","content":"Answer with only the final number."},{"role":"user","content":"What is 2 plus 3?"}],"grader":"number","expected":5}
+{"id":"json","messages":[{"role":"user","content":"Return a JSON object with name Romeo."}],"grader":"json","expected":{"name":"Romeo"}}
+{"id":"smoke_accept","messages":[{"role":"user","content":"Say anything."}],"grader":"contains","expected":""}
