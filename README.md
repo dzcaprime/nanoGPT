@@ -202,6 +202,26 @@ python sample.py \
 
 If you'd like to sample from a model you trained, use the `--out_dir` to point the code appropriately. You can also prompt the model with some text from a file, e.g. ```python sample.py --start=FILE:prompt.txt```.
 
+## post-training teaching pipeline
+
+This fork adds a small post-training teaching pipeline on top of nanoGPT. It keeps the full loop inspectable: start from a base decoder-only checkpoint, supervise it into a chat format, evaluate it with deterministic graders, optimize it on preference pairs, and run a small verified-reward loop. It is meant for learning and smoke testing, not for training a production assistant.
+
+The main pieces are:
+
+- `posttrain/chat_format.py`: defines a plain text chat template and assistant-only loss masks. User and system tokens stay in the context, but only assistant response tokens contribute to SFT loss.
+- `data/posttrain_sft/prepare.py`: converts chat JSONL into `train.bin` / `val.bin` token streams and matching `*_mask.bin` label streams.
+- `sft.py`: runs supervised fine-tuning from a nanoGPT checkpoint or GPT-2 initialization. It reuses the existing `GPT` model and checkpoint format.
+- `posttrain/graders.py`: contains deterministic graders for exact match, substring match, JSON validity, and numeric answers.
+- `chat_eval.py`: loads a checkpoint, generates chat completions, grades them, and writes per-example results plus a summary under `eval_runs/`.
+- `data/posttrain_dpo/prepare.py`: converts preference JSONL with `prompt`, `chosen`, and `rejected` fields into paired DPO training examples.
+- `dpo.py`: runs direct preference optimization using the SFT checkpoint as both the starting policy and frozen reference model.
+- `verified_rollout.py`: samples multiple completions for evaluation prompts, grades them, and writes accepted completions back into SFT-style JSONL.
+- `scripts/run_posttrain_pipeline.sh`: runs the smoke pipeline from SFT through verified fine-tuning. Run it from the repository root after installing the dependencies and preparing the base checkpoint expected by `config/sft_smoke.py`.
+
+The `config/*_smoke.py` files are the public, minimal configurations used by the smoke pipeline. They keep iteration counts, batch sizes, and devices small so the full post-training chain can be checked quickly. The default SFT smoke config expects a local checkpoint at `out-shakespeare-gpt2-124m/ckpt.pt`; create that checkpoint first or edit `source_out_dir` before running the pipeline.
+
+The sample JSONL files under `data/posttrain_sft`, `data/posttrain_dpo`, and `data/posttrain_eval` are deliberately small. They are useful for checking the mechanics of post-training, not for producing a capable assistant. Generated data and local run outputs, including `*.bin`, `*.pkl`, generated verified JSONL files, `out*/`, and `eval_runs/`, are local artifacts and do not need to be committed.
+
 ## efficiency notes
 
 For simple model benchmarking and profiling, `bench.py` might be useful. It's identical to what happens in the meat of the training loop of `train.py`, but omits much of the other complexities.
