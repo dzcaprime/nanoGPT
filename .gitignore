@@ -10,3 +10,22 @@ __pycache__/
 input.txt
 env/
 venv/
+logs/
+out*/
+eval_runs/
+tests/
+
+# Local validation helpers and notes.
+PROJECT_OVERVIEW.md
+docs/
+prompts/
+chat.py
+
+# Local post-training data and generated rollouts.
+data/posttrain_sft/*.jsonl
+!data/posttrain_sft/sample.jsonl
+data/posttrain_dpo/*.jsonl
+!data/posttrain_dpo/sample_preferences.jsonl
+data/posttrain_eval/*
+!data/posttrain_eval/sample_eval.jsonl
+data/posttrain_verified*/
