@@ -20,7 +20,6 @@ tests/
 PROJECT_OVERVIEW.md
 docs/
 prompts/
-chat.py
 
 # Local post-training data and generated rollouts.
 data/posttrain_sft/*.jsonl
