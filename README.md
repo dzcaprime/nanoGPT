@@ -222,6 +222,29 @@ The `config/*_smoke.py` files are the public, minimal configurations used by the
 
 The sample JSONL files under `data/posttrain_sft`, `data/posttrain_dpo`, and `data/posttrain_eval` are deliberately small. They are useful for checking the mechanics of post-training, not for producing a capable assistant. Generated data and local run outputs, including `*.bin`, `*.pkl`, generated verified JSONL files, `out*/`, and `eval_runs/`, are local artifacts and do not need to be committed.
 
+## local RAG
+
+This fork also includes a small local RAG path for inference-time grounding. It uses a lexical index built from local Markdown and text files, then injects retrieved chunks into the latest user turn before chat generation. It does not change the model, checkpoint format, training data, SFT, DPO, or verified rollout scripts.
+
+Build an index from project documents:
+
+```bash
+python rag/build_index.py --corpus README.md PROJECT_OVERVIEW.md docs --out_dir rag_index
+```
+
+Ask a checkpoint a question with retrieved context:
+
+```bash
+python chat.py \
+  --message "What does the post-training pipeline do?" \
+  --rag_index=rag_index \
+  --rag_top_k=3 \
+  --device=cpu \
+  --quiet
+```
+
+The index is stored as readable JSON under `rag_index/index.json`. It records chunk text, source paths, offsets, tokenized terms, and document frequencies. Retrieval uses a compact BM25-style lexical score, which is enough for local project notes and keeps the feature dependency-free.
+
 ## efficiency notes
 
 For simple model benchmarking and profiling, `bench.py` might be useful. It's identical to what happens in the meat of the training loop of `train.py`, but omits much of the other complexities.
